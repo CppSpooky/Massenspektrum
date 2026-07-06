@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Massenspektrum.vcxproj" Id="086016d6-7d12-4a8f-ba53-ce6c2c4813f6" />
+</Solution>
