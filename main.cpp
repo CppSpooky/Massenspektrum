@@ -112,7 +112,8 @@ bool is_half(long double number)
 int main(void) {
 
 	// Masse, für die eine Summenformel gefunden werden soll
-	long double observed_mass = 178.11;
+	long double observed_mass = 396.44;
+	long double tolerance = 0.3l;// Maximal tolerierbare Abweichung in Dalton
 	
 	// Massen des durchschnittlichen Atoms der Elemente
 	const long double mass_H	= (1.00784l + 1.00811l) / 2.0l;
@@ -124,19 +125,13 @@ int main(void) {
 	const long double mass_Br	= (79.901l + 79.907l) / 2.0l;
 
 	// Anzahl der sicher vorhandenen Atome
-	const size_t Anzahl_H	= 0;
-	const size_t Anzahl_C	= 0;
-	const size_t Anzahl_N	= 0;
-	const size_t Anzahl_O	= 0;
-	const size_t Anzahl_Si	= 0;
-	const size_t Anzahl_S	= 0;
-	const size_t Anzahl_Br	= 0;
-
-
-	long double tolerance = 0.0001l;// Maximal tolerierbare Abweichung
-
-	size_t iteration_counter = 0;	// Zählt, wie viele Kombinationen getestet wurden
-	size_t hits = 0;				// Zählt die Treffer mit einer Abweichung von höchstens tolerance
+	const size_t Anzahl_H_anfang = 0;
+	const size_t Anzahl_C_anfang = 0;
+	const size_t Anzahl_N_anfang = 0;
+	const size_t Anzahl_O_anfang = 0;
+	const size_t Anzahl_Si_anfang = 0;
+	const size_t Anzahl_S_anfang = 0;
+	const size_t Anzahl_Br_anfang = 0;
 
 	// Grenzen der Iteration festlegen
 	size_t H_max = static_cast<size_t>(ceil(observed_mass / mass_H));
@@ -153,9 +148,9 @@ int main(void) {
 	 //C_max = 15;
 	 //N_max = 5;
 	 //O_max = 1;
-	 //Si_max = 1;
+	 Si_max = 0;
 	 //S_max = 5;
-	 //Br_max = 5;
+	 Br_max = 0;
 
 	std::cout << "Grenzen:" << std::endl
 		<< "Br = " << Br_max << "\t"
@@ -166,6 +161,9 @@ int main(void) {
 		<< "C = " << C_max << "\t"
 		<< "H = " << H_max << std::endl << std::endl;
 
+	size_t iteration_counter = 0;	// Zählt, wie viele Kombinationen getestet wurden
+	size_t hits = 0;				// Zählt die Treffer mit einer Abweichung von höchstens tolerance	
+
 	long double calculated_mass = 0.0l;	// Berechnete Masse der Summenformel
 	long double deviation = 0.0;		// Abweichung zur gesuchten Summenformel
 	long double DBE = 0;				// Double Bond equivalent
@@ -173,15 +171,15 @@ int main(void) {
 	std::vector<Verbindung> alle_treffer; // Alle zutreffenden Summenformeln werden hier gespeichert
 	
 	// Beginne Zeitmessung
-	std::chrono::time_point Anfang = std::chrono::high_resolution_clock::now();
+	auto Anfang = std::chrono::high_resolution_clock::now();
 
-	for (size_t Br = Anzahl_Br; Br < Br_max; Br++) {
-		for (size_t S = Anzahl_S; S < S_max; S++) {
-			for (size_t Si = Anzahl_Si; Si < Si_max; Si++) {
-				for (size_t O = Anzahl_O; O < O_max; O++) {
-					for (size_t N = Anzahl_N; N < N_max; N++) {
-						for (size_t C = Anzahl_C; C < C_max; C++) {
-							for (size_t H = Anzahl_H; H < H_max; H++) {
+	for (size_t Br = Anzahl_Br_anfang; Br < Br_max + 1; Br++) {
+		for (size_t S = Anzahl_S_anfang; S < S_max + 1; S++) {
+			for (size_t Si = Anzahl_Si_anfang; Si < Si_max + 1; Si++) {
+				for (size_t O = Anzahl_O_anfang; O < O_max + 1; O++) {
+					for (size_t N = Anzahl_N_anfang; N < N_max + 1; N++) {
+						for (size_t C = Anzahl_C_anfang; C < C_max + 1; C++) {
+							for (size_t H = Anzahl_H_anfang; H < H_max + 1; H++) {
 							
 								iteration_counter++;
 
@@ -195,7 +193,7 @@ int main(void) {
 												+ static_cast<long double>(H) * mass_H;
 
 								// berechne Abweichung
-								deviation = abs(observed_mass - calculated_mass) / observed_mass;
+								deviation = abs(observed_mass - calculated_mass);
 
 								// vergleiche Abweichung und Toleranz
 								if (deviation < tolerance) {
@@ -220,7 +218,7 @@ int main(void) {
 		}
 	}
 
-	std::chrono::time_point Ende = std::chrono::high_resolution_clock::now();
+	auto Ende = std::chrono::high_resolution_clock::now();
 	auto Rechenzeit = std::chrono::duration_cast<std::chrono::milliseconds>(Ende - Anfang);
 
 	std::vector<Verbindung> alle_treffer_sorted = alle_treffer;
@@ -234,6 +232,3 @@ int main(void) {
 	std::cout  << static_cast<size_t>((static_cast<long double>(iteration_counter) / (static_cast<long double>(Rechenzeit.count() * 1000)))) << " Millionen berechnungen pro Sekunde" << std::endl;;
 	return 0;
 }
-
-
-	
